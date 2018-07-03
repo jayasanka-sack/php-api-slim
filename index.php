@@ -1,11 +1,12 @@
 <?php
 
 require 'vendor/autoload.php';
+include 'bootstrap.php';
 
 $app = new \Slim\App();
 
-$app->get('/hello/{name}', function ($request, $response, $args){
-    return $response->write("hello ".$args['name']);
+$app->get('/messages', function ($request, $response, $args){
+    return $response->write("This is our list of messages");
 });
 
 $app->run();
