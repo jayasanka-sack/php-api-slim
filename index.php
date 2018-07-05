@@ -31,9 +31,19 @@ $app->get('/messages', function ($request, $response, $args) {
 $app->post('/messages', function ($request, $response, $args) {
     $_message = $request->getParsedBodyParam('message', '');
 
+    $imagepath = '';
+    $files = $request->getUploadedFiles();
+    $newfile = $files['file'];
+    if($newfile->getError() === UPLOAD_ERR_OK){
+        $uploadFilename = $newfile->getClientFilename();
+        $newfile->moveTo("assets/images/".$uploadFilename);
+        $imagepath = "assets/images/".$uploadFilename;
+    }
+
     $message = new Message();
     $message->body = $_message;
-    $message->user_id = $request->getAttribute('user_id');;
+    $message->user_id = -1;
+    $message->image_url = $imagepath;
     $message->save();
 
     if ($message->id) {
@@ -42,6 +52,17 @@ $app->post('/messages', function ($request, $response, $args) {
     } else {
         return $response->withStatus(400);
     }
+});
+
+$app->delete('/messages/{message_id}', function ($request, $response, $args) {
+   $message = Message::find($args['message_id']);
+   $message->delete();
+
+   if($message->exists){
+       return $response->withStatus(400);
+   }else{
+        return $response->withStatus(204);
+   }
 });
 
 // Run app
