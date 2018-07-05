@@ -7,20 +7,22 @@ use Chatter\Models\Message;
 use Chatter\Middleware\Logging as ChatterLogging;
 use Chatter\Middleware\Authentication as ChatterAuth;
 
-$app = new \Slim\App();
+$app = new \Slim\App([
+    'settings' => [
+        'displayErrorDetails' => true
+    ]
+]);
 $app->add(new ChatterAuth());
 $app->add(new ChatterLogging());
 
 $app->get('/messages', function ($request, $response, $args) {
     $_message = new Message();
+
     $messages = $_message->all();
 
     $payload = [];
     foreach($messages as $_msg) {
-        $payload[$_msg->id] = ['body' => $_msg->body, 
-                                'user_id' => $_msg->user_id, 
-                                'created_at' => $_msg->created_at
-                              ];
+        $payload[$_msg->id] = ['body' => $_msg->body, 'user_id' => $_msg->user_id, 'created_at' => $_msg->created_at];
     }
 
     return $response->withStatus(200)->withJson($payload);
@@ -31,12 +33,11 @@ $app->post('/messages', function ($request, $response, $args) {
 
     $message = new Message();
     $message->body = $_message;
-    $message->user_id = -1;
+    $message->user_id = $request->getAttribute('user_id');;
     $message->save();
 
     if ($message->id) {
-        $payload = ['message_id' => $message->id, 
-                        'message_uri' => '/messages/' . $message->id];
+        $payload = ['message_id' => $message->id, 'message_uri' => '/messages/' . $message->id];
         return $response->withStatus(201)->withJson($payload);
     } else {
         return $response->withStatus(400);
