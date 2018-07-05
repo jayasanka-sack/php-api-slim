@@ -22,7 +22,6 @@ class Authentication
             return $response;
         }
 
-        $request = $request->withAttribute('user_id', $user->id);
         $response = $next($request, $response);
 
         return $response;

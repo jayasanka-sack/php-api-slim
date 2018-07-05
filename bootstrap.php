@@ -1,13 +1,13 @@
 <?php
 
-include 'config/credentials.php';
+include 'config/creds.php';
 include 'vendor/autoload.php';
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 
-$capsule = new Capsule();
+$capsule = new Capsule;
 $capsule->addConnection([
-   "driver"     => "mysql",
+    "driver"    => "mysql",
     "host"      => $db_host,
     "database"  => $db_name,
     "username"  => $db_user,

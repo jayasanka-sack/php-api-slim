@@ -14,13 +14,13 @@ $app->add(new ChatterLogging());
 $app->get('/messages', function ($request, $response, $args) {
     $_message = new Message();
     $messages = $_message->all();
+
     $payload = [];
-    foreach ($messages as $_msg) {
-        $payload[$_msg->id] = [
-            'body' => $_msg->body,
-            'user_id' => $_msg->user_id,
-            'created_at' => $_msg->created_at
-        ];
+    foreach($messages as $_msg) {
+        $payload[$_msg->id] = ['body' => $_msg->body, 
+                                'user_id' => $_msg->user_id, 
+                                'created_at' => $_msg->created_at
+                              ];
     }
 
     return $response->withStatus(200)->withJson($payload);
@@ -35,11 +35,13 @@ $app->post('/messages', function ($request, $response, $args) {
     $message->save();
 
     if ($message->id) {
-        $payload = ['message_id' => $message->id, 'message_uri' => '/messages/' . $message->id];
+        $payload = ['message_id' => $message->id, 
+                        'message_uri' => '/messages/' . $message->id];
         return $response->withStatus(201)->withJson($payload);
     } else {
         return $response->withStatus(400);
     }
 });
 
+// Run app
 $app->run();
