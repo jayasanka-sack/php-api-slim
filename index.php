@@ -6,6 +6,9 @@ include 'bootstrap.php';
 use Chatter\Models\Message;
 use Chatter\Middleware\Logging as ChatterLogging;
 use Chatter\Middleware\Authentication as ChatterAuth;
+use Chatter\Middleware\FileFilter;
+use Chatter\Middleware\ImageRemoveExif;
+use Chatter\Middleware\FileMove;
 
 $app = new \Slim\App([
     'settings' => [
@@ -28,17 +31,15 @@ $app->get('/messages', function ($request, $response, $args) {
     return $response->withStatus(200)->withJson($payload);
 });
 
+$filter = new FileFilter();
+$removeExif = new ImageRemoveExif();
+$move = new FileMove();
+
 $app->post('/messages', function ($request, $response, $args) {
     $_message = $request->getParsedBodyParam('message', '');
 
     $imagepath = '';
-    $files = $request->getUploadedFiles();
-    $newfile = $files['file'];
-    if($newfile->getError() === UPLOAD_ERR_OK){
-        $uploadFilename = $newfile->getClientFilename();
-        $newfile->moveTo("assets/images/".$uploadFilename);
-        $imagepath = "assets/images/".$uploadFilename;
-    }
+
 
     $message = new Message();
     $message->body = $_message;
@@ -52,7 +53,7 @@ $app->post('/messages', function ($request, $response, $args) {
     } else {
         return $response->withStatus(400);
     }
-});
+})->add($filter)->add($removeExif)->add($move);
 
 $app->delete('/messages/{message_id}', function ($request, $response, $args) {
    $message = Message::find($args['message_id']);
