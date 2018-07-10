@@ -10,8 +10,8 @@ class FileMove
     public function __invoke($request, $response, $next)
     {
         $bucketName = 'jayasanka';
-        $IAM_KEY = 'AKIAJRHVV4H3ETUTEXDA';
-        $IAM_SECRET = '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';
+        $IAM_KEY = 'key';
+        $IAM_SECRET = 'secret';
 
 
         $s3 = new S3Client([
