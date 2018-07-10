@@ -19,14 +19,15 @@ $app->add(new ChatterAuth());
 $app->add(new ChatterLogging());
 
 $app->get('/messages', function ($request, $response, $args) {
-    $_message = new Message();
-
-    $messages = $_message->all();
+//    $_message = new Message();
+//
+//    $messages = $_message->all();
 
     $payload = [];
-    foreach($messages as $_msg) {
-        $payload[$_msg->id] = ['body' => $_msg->body, 'user_id' => $_msg->user_id, 'created_at' => $_msg->created_at];
-    }
+    $payload[1] = "ff";
+//    foreach($messages as $_msg) {
+//        $payload[$_msg->id] = ['body' => $_msg->body, 'user_id' => $_msg->user_id, 'created_at' => $_msg->created_at];
+//    }
 
     return $response->withStatus(200)->withJson($payload);
 });
@@ -44,7 +45,7 @@ $app->post('/messages', function ($request, $response, $args) {
     $message = new Message();
     $message->body = $_message;
     $message->user_id = -1;
-    $message->image_url = $imagepath;
+    $message->image_url = $request->getAttribute('png_filename');
     $message->save();
 
     if ($message->id) {

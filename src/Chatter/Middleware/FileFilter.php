@@ -2,7 +2,6 @@
 
 namespace Chatter\Middleware;
 
-
 class FileFilter
 {
     protected $allowedFiles = ['image/jpeg', 'image/png'];
@@ -11,10 +10,10 @@ class FileFilter
     {
         $files = $request->getUploadedFiles();
         $newfile = $files['file'];
-        $newfile_type = $newfile->getClientMedia();
+        $newfile_type = $newfile->getClientMediaType();
 
-        if(!in_array($newfile_type, $this->allowedFiles)){
-            return $response->withStatus(415);
+        if(!in_array($newfile_type, $this->allowedFiles)) {
+            return $response->withStatus(400);
         }
 
         $response = $next($request, $response);
